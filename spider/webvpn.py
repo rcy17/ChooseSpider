@@ -35,6 +35,7 @@ def login_vpn(username, password, session: Session = None):
             return session
         print('Cache is invalid')
         file.unlink()
+        session = Session()
 
     data = {
         'auth_type': 'local',
@@ -47,7 +48,7 @@ def login_vpn(username, password, session: Session = None):
     path.mkdir(exist_ok=True)
     error = check_error()
     if error:
-        open(str(path / datetime.now().strftime('%Y%m%d%H%M%S.html')), 'w').write(error)
+        open(str(path / datetime.now().strftime('%Y%m%d%H%M%S.html')), 'w', encoding='utf-8').write(error)
         raise AssertionError('登录失败')
     cookies = session.cookies.get_dict()
     json.dump(cookies, open(file, 'w'), ensure_ascii=False)

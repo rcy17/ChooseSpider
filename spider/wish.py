@@ -15,6 +15,8 @@ def get_result(session, data):
     result = []
     for page in tqdm(range(1, total + 1)):
         time.sleep(0.01)
+        r = session.post('https://webvpn.tsinghua.edu.cn/http/77726476706e69737468656265737421eaff4b8b3f3b2653770'
+                         'bc7b88b5c2d320506b1aec738590a49ba/xkBks.xkBksZytjb.do', data=data)
         data['page'] = page
         result += json.loads(re.search(r'var gridData = (\[.*?\]);', r.text, re.DOTALL).group(1))
     return result
