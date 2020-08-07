@@ -1,4 +1,5 @@
 from io import BytesIO
+from pathlib import Path
 
 from requests import Session
 from PIL import Image
@@ -7,10 +8,15 @@ from PIL import Image
 def login_choose(username, password, session: Session):
     session.get('https://webvpn.tsinghua.edu.cn/http/77726476706e69737468656265737421eaff4b8b3f3b265377'
                 '0bc7b88b5c2d320506b1aec738590a49ba/xklogin.do')
-    Image.open(BytesIO(session.get('https://webvpn.tsinghua.edu.cn/http/77726476706e69737468656265737421eaff4b8b'
-                                   '3f3b2653770bc7b88b5c2d320506b1aec738590a49ba/login-jcaptcah.jpg?vpn-1&'
-                                   'captchaflag=login1').content)).show()
-    code = input('Please input validate code:')
+    image = Image.open(BytesIO(session.get('https://webvpn.tsinghua.edu.cn/http/77726476706e69737468656265737421eaff4'
+                                           'b8b3f3b2653770bc7b88b5c2d320506b1aec738590a49ba/login-jcaptcah.jpg?vpn-1&'
+                                           'captchaflag=login1').content))
+    assert isinstance(image, Image.Image)
+    image.show()
+    path = Path('.cache')
+    path.mkdir(exist_ok=True)
+    image.save(str(path / 'code.jpg'))
+    code = input('Please input validate code:').strip().upper()
     data = {
         'j_username': username,
         'j_password': password,
