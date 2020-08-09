@@ -31,9 +31,9 @@ def login_vpn(username, password, session: Session = None):
         cookies = json.load(open(file))
         session.cookies.update(cookies)
         if not check_error():
-            print('Cache is valid')
+            print('Cache for webvpn is valid')
             return session
-        print('Cache is invalid')
+        print('Cache for webvpn is invalid')
         file.unlink()
         session = Session()
 

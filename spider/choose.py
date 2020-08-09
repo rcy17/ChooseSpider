@@ -6,6 +6,13 @@ from PIL import Image
 
 
 def login_choose(username, password, session: Session):
+    r = session.get('https://webvpn.tsinghua.edu.cn/http/77726476706e69737468656265737421eaff4b8b3f3b265377'
+                    '0bc7b88b5c2d320506b1aec738590a49ba/xkBks.vxkBksXkbBs.do?m=main')
+    if '本科生选课' in r.text:
+        # shortcut
+        print('cache for choose is valid')
+        return session
+
     session.get('https://webvpn.tsinghua.edu.cn/http/77726476706e69737468656265737421eaff4b8b3f3b265377'
                 '0bc7b88b5c2d320506b1aec738590a49ba/xklogin.do')
     image = Image.open(BytesIO(session.get('https://webvpn.tsinghua.edu.cn/http/77726476706e69737468656265737421eaff4'
