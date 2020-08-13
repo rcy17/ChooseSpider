@@ -7,7 +7,7 @@ def parse_args():
     parser = ArgumentParser()
     parser.add_argument('-u', '--username', type=str)
     parser.add_argument('-p', '--password', type=str)
-    parser.add_argument('-a', '--action', choices=['wish', 'comment', 'logout'])
+    parser.add_argument('-a', '--action', choices=['wish', 'comment', 'logout', 'rest'])
     return parser.parse_args()
 
 
@@ -21,6 +21,8 @@ def main():
         spider.get_comment(s)
     elif args.action == 'logout':
         spider.logout_vpn()
+    elif args.action == 'rest':
+        spider.get_rest(s)
     else:
         assert 0
 
