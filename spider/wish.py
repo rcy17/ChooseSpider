@@ -23,6 +23,7 @@ def get_result(session, data, url):
             open('error.txt', 'w').write(re.search(r'var gridData = (\[.*?\]);', r.text, re.DOTALL).group(1))
     return result
 
+
 def spider_run(session, data, current, url):
     m = data['m']
     path = Path('data/' + m)
@@ -32,8 +33,7 @@ def spider_run(session, data, current, url):
         print(file, 'exists')
         return
     result = get_result(session, data, url)
-    json.dump(result, open(file, 'w'), ensure_ascii=False)
-
+    return result, file
 
 
 def get_wish(session: Session):
@@ -53,9 +53,23 @@ def get_wish(session: Session):
           'bc7b88b5c2d320506b1aec738590a49ba/xkBks.xkBksZytjb.do'
     for m in ('tbzySearchBR', 'tbzySearchTy'):
         data['m'] = m
-        spider_run(session, data, current, url)
-    if  then:
+        result, file = spider_run(session, data, current, url)
+        json.dump(result, open(file, 'w'), ensure_ascii=False)
+    if then:
         print('Next time:', then)
+
+
+def get_queue(session: Session, result, limit, offset):
+    data = {
+        'm': 'selectBksDlCount',
+        'kc_message': ';'.join(f'2020-2021-1_{each[0]}_{each[1]}' for each in result[offset: offset + limit])
+    }
+    url = 'https://webvpn.tsinghua.edu.cn/http/77726476706e69737468656265737421eaff4b8b3f3b2653770' \
+          'bc7b88b5c2d320506b1aec738590a49ba/xkBks.vxkBksXkbBs.do'
+    if not limit:
+        return []
+    r = session.post(url, data=data)
+    return r.json()
 
 
 def get_rest(session: Session):
@@ -66,4 +80,14 @@ def get_rest(session: Session):
     }
     url = 'https://webvpn.tsinghua.edu.cn/http/77726476706e69737468656265737421eaff4b8b3f3b2653770' \
           'bc7b88b5c2d320506b1aec738590a49ba/xkBks.vxkBksJxjhBs.do'
-    spider_run(session, data, datetime.now().strftime('%Y年%m月%d日%H时%M分'), url)
+    result, file = spider_run(session, data, datetime.now().strftime('%Y年%m月%d日%H时%M分'), url)
+    page_size = 20
+    total = len(result)
+    queue = []
+    for page in tqdm(range(total // page_size)):
+        queue += get_queue(session, result, page_size, page * page_size)
+    finished = page_size * (total // page_size)
+    queue += get_queue(session, result, total - finished, finished)
+    for l, q in zip(result, queue):
+        l.insert(5, q.get('dlrs', ''))
+    json.dump(result, open(file, 'w'), ensure_ascii=False)
