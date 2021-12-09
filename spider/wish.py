@@ -91,7 +91,7 @@ def get_rest(session: Session, urls, term):
     }
     url = urls["rest"]
     result, file = spider_run(
-        session, data, datetime.now().strftime("%Y年%m月%d日%H时%M分"), url
+        session, data, datetime.now().strftime(f"{term}-%Y年%m月%d日%H时%M分"), url
     )
     page_size = 20
     total = len(result)
@@ -102,4 +102,4 @@ def get_rest(session: Session, urls, term):
     queue += get_queue(session, result, total - finished, finished, urls, term)
     for l, q in zip(result, queue):
         l.insert(5, q.get("dlrs", ""))
-    json.dump(result, open(file, "w"), ensure_ascii=False)
+    json.dump(result, open(file, "w", encoding="utf-8"), ensure_ascii=False)
