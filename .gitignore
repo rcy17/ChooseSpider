@@ -1,5 +1,6 @@
-# pycharm setting file
+# project setting file
 .idea/
+.vscode/
 
 # some temporary data
 data/
